@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link href="https://fonts.googleapis.com/css?family=Manrope&display=swap&subset=latin-ext" rel="stylesheet">
+    <link rel="shortcut icon" type="image/x-icon" href="images/favicon.png" />
+    <script src="https://kit.fontawesome.com/c9953e1c79.js" crossorigin="anonymous"></script>
+
+</head>
+
+<body onload="renderDate(); dt.setDate(rdt.getDate()) ;dateString(); getNameOfHolidayDataFromAPI(); dateISOString(); loadIndexedDB(); changeColorsOfPage(); setDatePickerDate(); displayChecklistData();">
+<div class="wrapper-blur" id="wrapper-blur">
+</div>
+<div class="wrapper" id="wrapper">
+
+    <!-- holidaysName -->
+    <div id="holidayBar" class="holidayBar">
+            <div class="holidayContent">
+                <p id="holiday_name" class="holiday_nameC" onclick="getDescriptionOfHolidayDataFromAPI();">API HERE</p>
+            </div>
+    </div>
+
+    <!-- holidaysDescription -->
+    <div id="holidayDescription" class="holidayDescription">
+        <div class="holidayDescriptionContent">
+            <p id="holidayDescriptionContent" class="holidayDescriptionC" onclick="getDescriptionOfHolidayDataFromAPI();">API DESCRIPTION HERE</p>
+        </div>
+    </div>
+
+    <!-- sidePanel -->
+    <div id="sidePanel" class="sidePanel" onclick="checklistFadeOut(); notesFadeOut(); notesFadeInLeft();">
+        <div>
+            <div class="nextNotes">
+                <span><img src="images/notes.png" id="notes-img"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- notes -->
+    <div class="notes" id="notes">
+        <div class="notesHeadingBackground" id="notesHeadingBackground">
+            <div class="prevNotes" onclick="setTimeout(checklistFadeIn,300); setTimeout(notesFadeIn,300); notesFadeOutRight();">
+                <span>&#10094;</span>
+            </div>
+            <div class="notesHeading">
+                <h2 id="notes-h2">NOTES</h2>
+            </div>
+            <div class="addNotes" onclick="addNote();">
+                <span><i class="far fa-calendar-plus"></i></span>
+            </div>
+        </div>
+        <div class="notesContent" id="notesContent">
+                <section class="note-display">
+                    <ul id="note-display-ul">
+                    </ul>
+                </section>
+                <section class="new-note" id="form">
+                    <h2 id="enter-note">Enter a new note</h2>
+                    <form >
+                        <div>
+                            <label id="enter-title" for="title">Note title</label>
+                            <input id="title" type="text" required>
+                        </div>
+                        <div>
+                            <label id="enter-body" for="body">Note text</label>
+                            <input id="body" type="text" required>
+                        </div>
+                        <div>
+                            <button id="create-button">Create</button>
+                        </div>
+                    </form>
+                </section>
+        </div>
+    </div>
+
+    <!-- done notes panel -->
+    <div id="checklist-panel" class="checklist-panel" onclick="checklistFadeOut(); notesFadeOut(); checklistFadeInLeft();">
+        <div>
+            <div class="main-lang">
+                <span><img src="images/done-notes.png" id="every-note-image"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- done notes -->
+    <div class="notes" id="checklist">
+        <div class="notesHeadingBackground" id="checklistHeadingBackground">
+            <div class="prevNotes" onclick="setTimeout(checklistFadeIn,300); setTimeout(notesFadeIn,300); checklistFadeOutRight();">
+                <span>&#10094;</span>
+            </div>
+            <div class="notesHeading">
+                <h2 id="checklist-h2">CHECKLIST</h2>
+            </div>
+            <div class="addNotes" onclick="addNoteToChecklist();">
+                <span><i class="far fa-calendar-plus"></i></span>
+            </div>
+        </div>
+        <div class="notesContent" id="checklistContent">
+            <section class="checklist-display">
+                <ul id="checklist-display-ul">
+                </ul>
+            </section>
+            <section class="new-note" id="checklist-form">
+                <h2 id="checklist-enter-note">Enter a new item</h2>
+                <form >
+                    <div>
+                        <label id="checklist-enter-title" for="checklist-title">Title</label>
+                        <input id="checklist-title" type="text" required>
+                    </div>
+                    <div>
+                        <label id="checklist-enter-body" for="checklist-body">Text</label>
+                        <input id="checklist-body" type="text" required>
+                    </div>
+                    <div>
+                        <button id="checklist-create-button">Create</button>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </div>
+
+    <form action="javascript:searchForDate()">
+        <input type="date" id="pick-date" class="pick-date" name="date-picker" value="">
+        <button class="pick-date-btn" id="pick-date-btn">Search</button>
+    </form>
+
+
+    <!-- calendar -->
+    <div class="calendar" id="calendar">
+        <div class="month" id="month_div">
+            <div class="prev" onclick="moveDate('prev')">
+                <span>&#10094;</span>
+            </div>
+            <div class="info">
+                <h3 id="info-note_picker" style="display: none; font-size: 20px; position: absolute; top: 35px; left: 100px; line-height: 0.8;">
+                    <- Show notes
+                </h3>
+                <h3 id="info-checklist_picker" style="display: none; font-size: 20px; position: absolute; top: 55px; left: 100px; line-height: 0.8;">
+                    <- Show notes
+                </h3>
+                <h3 id="info-language_selector" style="display: none; font-size: 20px; position: absolute; top: 35px; right: 100px; line-height: 0.8;">
+                    Pick a language ->
+                </h3>
+                <h3 id="info-date_selector" style="display: none; font-size: 20px; position: absolute; top: 88px; left: 50%; transform: translate(-50%, 0); line-height: 1;">
+                    ↑<br>Pick a date you want to find
+                </h3>
+                <h3 id="info-holidays" style="display: none; font-size: 20px; position: absolute; bottom: 90px; left: 20px; line-height: 1.2;">
+                    Today's national day (click to show description)<br>↓
+                </h3>
+                <h3 id="info-darkmode" style="display: none; font-size: 20px; position: absolute; bottom: 27px; right: 230px; line-height: 0.8;">
+                    Click to change color mode ->
+                </h3>
+                <h2 id="month"></h2>
+                <p id="date_str"></p>
+                <p id="nameday_str"></p>
+                <h3 id="info-swap_month" style="display: none; font-size: 25px;"><- Buttons for calendar control -></h3>
+            </div>
+            <div class="next" onclick="moveDate('next')">
+                <span>&#10095;</span>
+            </div>
+        </div>
+        <div class="weekdaysUS" id="weekdaysUS">
+            <div>Sun</div>
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>Sat</div>
+        </div>
+        <div class="weekdaysDE" id="weekdaysDE">
+            <div>Mon</div>
+            <div>Die</div>
+            <div>Mit</div>
+            <div>Don</div>
+            <div>Fre</div>
+            <div>Sam</div>
+            <div>Son</div>
+        </div>
+        <div class="weekdaysCZ" id="weekdaysCZ">
+            <div>Pon</div>
+            <div>Úte</div>
+            <div>Stř</div>
+            <div>Čtv</div>
+            <div>Pát</div>
+            <div>Sob</div>
+            <div>Ned</div>
+        </div>
+        <div class="days" id="days">
+        </div>
+    </div>
+
+    <!-- language panel -->
+    <div id="language-panel" class="language-panel" onclick="fadingFlags();">
+        <div>
+            <div class="main-lang">
+                <span><img src="images/united-states.png" id="lang-image"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- United states -->
+    <div id="US" class="country1" onclick="changeLanguage(this);">
+        <div>
+            <div class="nextNotes">
+                <span><img src="images/united-states.png"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Germany -->
+    <div id="DE" class="country2" onclick="changeLanguage(this);">
+        <div>
+            <div class="nextNotes">
+                <span><img src="images/germany.png"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Czech -->
+    <div id="CZ" class="country3" onclick="changeLanguage(this);">
+        <div>
+            <div class="nextNotes">
+                <span><img src="images/czech-republic.png"></span>
+            </div>
+        </div>
+    </div>
+
+    <input type="checkbox" id="switch" onclick="toggleMode();">
+    <div class="app">
+            <div class="mode_button">
+                    <label for="switch" class="label">
+                        <div class="toggle"></div>
+                        <div class="names">
+                            <p class="light" id="light">Light</p>
+                            <p class="dark" id="dark">Dark</p>
+                        </div>
+                    </label>
+            </div>
+    </div>
+
+    <!-- info panel -->
+    <div id="info-panel" class="info-panel" onclick="infoOverlay();">
+        <div>
+            <div class="main-lang">
+                <span><img src="images/question-mark.png" id="info-image"></span>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+<script src="script.js"></script>
+</body>
+</html>
